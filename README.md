@@ -9,6 +9,11 @@ An end-to-end **Extract, Load, Transform (ELT)** pipeline and analytics engineer
 
 It demonstrates a layered data warehouse design, a custom 4-pillar data profiling audit, virtual staging views, entity resolution, and dimensional modeling to produce **Monthly Customer Cohort Retention Grids**, **Cumulative Revenue-Based CLV (Customer Lifetime Value) and ARPU Models**.
 
+**Tech stack**:
+- PostgreSQL, DBeaver, PowerShell (bulk ingestion), Git Bash
+- ELT, dimensional modeling
+- CTEs, window functions, DATE_TRUNC, CASE WHEN pivoting, regex validation, cleaning views
+
 ---
 
 ## Table of Contents
