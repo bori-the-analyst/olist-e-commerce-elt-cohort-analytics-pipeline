@@ -7,7 +7,7 @@
 
 An end-to-end **Extract, Load, Transform (ELT)** pipeline and analytics engineering project built in PostgreSQL on Brazilian e-commerce data from Olist (100k+ orders).
 
-It demonstrates a layered data warehouse design, a custom 4-pillar data profiling audit, virtual staging views, entity resolution, and dimensional modeling to produce **Monthly Customer Cohort Retention Grids** and **Cumulative Revenue-Based CLV (Customer Lifetime Value) & ARPU Models**.
+It demonstrates a layered data warehouse design, a custom 4-pillar data profiling audit, virtual staging views, entity resolution, and dimensional modeling to produce **Monthly Customer Cohort Retention Grids**, **Cumulative Revenue-Based CLV (Customer Lifetime Value) and ARPU Models**.
 
 ---
 
@@ -98,24 +98,15 @@ Before building the staging views, a full audit was run on the raw layer.
 ### Deliverable 1: Monthly Cohort Retention Grid
 
 Counts distinct active customers (`customer_unique_id`) across purchase-month offsets relative to their initial cohort month (M₀).
+- **Retention Rate** = (Unique Active Customers in Period {N}) \ (Total Customers in Initial Cohort Period {0}) x 100.
+- *Period definition:* Period 0 is the acquisition month (index 0). Periods 1, 2, … are subsequent monthly intervals.
 
-$$
-\text{Retention Rate}_N = \frac{\text{Unique Active Customers in Period } N}{\text{Total Customers in Initial Cohort (Period 0)}} \times 100
-$$
-
-**Period definition:** Period 0 is the acquisition month (index 0). Periods 1, 2, … are subsequent monthly intervals.
 
 ### Deliverable 2: Cumulative ARPU & CLV Model
 
 Normalizes monthly revenue against initial cohort size (M₀ baseline users) and computes running cumulative revenue per customer over time using SQL window frames.
-
-$$
-\text{ARPU} = \frac{\text{Total Revenue Generated in Period } R}{\text{Total Active Users in Period } U}
-$$
-
-$$
-\text{CLV} = \text{Average Order Value (AOV)} \times \text{Purchase Frequency Rate} \times \text{Average Customer Lifespan}
-$$
+- **ARPU** = (Total Revenue Generated in Period {N}) \ (Total Active Users in Period {N}).
+- **CLV** = (Average Order Value {AOV}) x (Purchase Frequency Rate) x (Average Customer Lifespan).
 
 > **Implemented (simplified historical CLV):** the running sum of revenue generated per unique customer across historical transaction timestamps.
 
@@ -180,4 +171,4 @@ cohort_month | initial_size |  M_0   |  M_1  |  M_2  |  M_3  |  M_6  | M_12
 
 - **Database engine:** PostgreSQL
 - **Architecture patterns:** ELT (Extract, Load, Transform), dimensional data modeling
-- **Advanced SQL:** CTEs, window functions (`SUM() OVER`), date arithmetic (`DATE_TRUNC`, year/month offsets), string sanitization and regex validation (`SIMILAR TO`, `~`), conditional aggregation (`CASE WHEN` pivoting)
+- **Advanced SQL:** CTEs and subqueries, window functions (`SUM() OVER`), date arithmetic (`DATE_TRUNC`, year/month offsets), data cleaning Views, string sanitization and regex validation (`SIMILAR TO`, `~`), conditional aggregation (`CASE WHEN` pivoting), etc.
