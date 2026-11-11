@@ -1,4 +1,4 @@
-# Olist E-Commerce ELT Pipeline & Cohort Analytics Platform
+# Olist E-Commerce ELT Pipeline: Cohort Retention & CLV Analytics Platform
 
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13%2B-blue?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Architecture](https://img.shields.io/badge/Architecture-ELT-orange?style=for-the-badge)
