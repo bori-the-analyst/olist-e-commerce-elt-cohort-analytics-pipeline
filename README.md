@@ -15,6 +15,73 @@ It demonstrates a layered data warehouse design, a custom 4-pillar data profilin
 - CTEs, window functions, DATE_TRUNC, CASE WHEN pivoting, regex validation, cleaning views
 
 ---
+## Analytical Deliverables
+### Deliverable 1: Monthly Cohort Retention Grid
+
+Counts distinct active customers (`customer_unique_id`) across purchase-month offsets relative to their initial cohort month (M₀).
+- **Retention Rate** = (Unique Active Customers in Period {N}) \ (Total Customers in Initial Cohort Period {0}) x 100.
+- *Period definition:* Period 0 is the acquisition month (index 0). Periods 1, 2, … are subsequent monthly intervals.
+
+
+### Deliverable 2: Cumulative ARPU & CLV Model
+
+Normalizes monthly revenue against initial cohort size (M₀ baseline users) and computes running cumulative revenue per customer over time using SQL window frames.
+
+- **ARPU**_(c,n) = (Revenue of cohort c {in month n}) / (Initial size of cohort c)
+- **Cumulative CLV**_(c,n) = (Total revenue of cohort c {from month 0 through month n}) / (Initial size of cohort c)
+
+> **Implemented (simplified historical CLV):** the running sum of revenue per acquired customer across each cohort's observed history. The classical formula (AOV × Purchase Frequency × Customer Lifespan) is a forward-looking estimate and is not what this model computes.
+
+---
+
+## Key Findings
+
+- **Repeat purchasing is very low.** For cohorts of meaningful size (300+ customers), retention is under 1% at every observed offset. Month-1 retention ranges from about 0.2% to 0.7%.
+- **Almost all value comes from the first order.** First-month ARPU is roughly 150–182 BRL per customer (price + freight) across cohorts from Jan 2017 onward. For the oldest cohorts, repeat purchases add only about 2–4% to cumulative CLV (e.g., Jan 2017: 181.92 → 186.58 after 19 months).
+- **Growth is acquisition-driven.** Cohort size rose from 754 (Jan 2017) to 7,217 (Nov 2017, the largest cohort) with no meaningful change in retention. Business impact depends on acquisition volume and first-order value rather than loyalty.
+
+---
+
+## Sample Output
+
+### Pivoted Cohort Retention Grid (%)
+
+`–` means the offset is beyond the dataset's end date (not yet observable), not zero retention.
+
+| cohort_month | initial_size | M_0 | M_1 | M_2 | M_3 | M_6 | M_12 |
+|--------------|-------------:|------:|----:|----:|----:|----:|-----:|
+| 2017-01-01 | 754 | 100.0 | 0.4 | 0.3 | 0.1 | 0.4 | 0.7 |
+| 2017-03-01 | 2,595 | 100.0 | 0.5 | 0.3 | 0.4 | 0.2 | 0.2 |
+| 2017-05-01 | 3,560 | 100.0 | 0.5 | 0.5 | 0.4 | 0.4 | 0.3 |
+| 2017-08-01 | 4,149 | 100.0 | 0.7 | 0.3 | 0.3 | 0.3 | 0.1 |
+| 2017-11-01 | 7,217 | 100.0 | 0.6 | 0.4 | 0.2 | 0.1 | – |
+| 2018-01-01 | 6,983 | 100.0 | 0.3 | 0.4 | 0.3 | 0.2 | – |
+| 2018-03-01 | 6,947 | 100.0 | 0.4 | 0.3 | 0.3 | – | – |
+| 2018-06-01 | 5,934 | 100.0 | 0.4 | 0.3 | – | – | – |
+
+### Cumulative ARPU & CLV (Jan 2017 cohort, selected months)
+
+| month_index | active_users | monthly_revenue | monthly_arpu | cumulative_clv |
+|------------:|-------------:|----------------:|-------------:|---------------:|
+| 0 | 754 | 137,168.87 | 181.92 | 181.92 |
+| 1 | 3 | 170.83 | 0.23 | 182.15 |
+| 2 | 2 | 114.70 | 0.15 | 182.30 |
+| 3 | 1 | 89.70 | 0.12 | 182.42 |
+| 6 | 3 | 448.43 | 0.59 | 183.43 |
+| 12 | 5 | 552.45 | 0.73 | 185.02 |
+
+*Revenue is in BRL (item price + freight). `cumulative_clv` also includes months not shown, so it is not the sum of the displayed rows.*
+
+---
+
+## Known Limitations
+
+- **Right-censored cohorts:** The dataset ends around Aug 2018, so recent cohorts have fewer observable months. Retention for unobservable offsets is shown as `–`.
+- **Tiny early cohorts:** The Sep 2016 (3 customers) and Dec 2016 (1 customer) cohorts are too small to be meaningful. The Dec 2016 cohort's 100% M_1 is a single repeat customer.
+- **Sparse month index:** Months with zero activity have no row in the CLV output (e.g., the Oct 2016 cohort skips months 1–5). Cumulative values are unaffected, but charting requires a date spine to fill gaps.
+
+
+---
 
 ## Table of Contents
 
@@ -95,25 +162,6 @@ Before building the staging views, a full audit was run on the raw layer.
 | **2. Quality Dimensions** | Integrity & validity | Zero orphaned orders via `LEFT JOIN` checks against `customers`; no negative/zero anomalies in prices and freight (`price > 0`); order status distribution audited to isolate non-revenue statuses. |
 | **3. Entity Resolution** | Identity matching | `customer_id` is a transient key (one per order), while `customer_unique_id` is the true human entity. Matching on `customer_unique_id` is mandatory for tracking repeat purchases. |
 | **4. Temporal Boundary** | Date logic | Verified global date ranges and the sequence constraint `order_delivered_customer_date >= order_purchase_timestamp`. |
-
----
-
-## Analytical Deliverables
-
-### Deliverable 1: Monthly Cohort Retention Grid
-
-Counts distinct active customers (`customer_unique_id`) across purchase-month offsets relative to their initial cohort month (M₀).
-- **Retention Rate** = (Unique Active Customers in Period {N}) \ (Total Customers in Initial Cohort Period {0}) x 100.
-- *Period definition:* Period 0 is the acquisition month (index 0). Periods 1, 2, … are subsequent monthly intervals.
-
-
-### Deliverable 2: Cumulative ARPU & CLV Model
-
-Normalizes monthly revenue against initial cohort size (M₀ baseline users) and computes running cumulative revenue per customer over time using SQL window frames.
-- **ARPU** = (Total Revenue Generated in Period {N}) \ (Total Active Users in Period {N}).
-- **CLV** = (Average Order Value {AOV}) x (Purchase Frequency Rate) x (Average Customer Lifespan).
-
-> **Implemented (simplified historical CLV):** the running sum of revenue generated per unique customer across historical transaction timestamps.
 
 ---
 
