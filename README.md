@@ -61,7 +61,7 @@ Raw CSV datasets are ingested untouched, cleaned dynamically through views, and 
 
 ### 1. `raw` (Landing Schema)
 
-- **Design:** All columns are defined as `TEXT` during bulk copy to guarantee zero load failures and preserve raw operational history.
+- **Design:** Table data ingestion using PowerShell, and all columns are defined as `TEXT` during bulk copy to guarantee zero load failures and preserve raw operational history.
 - **Scope:** Ingested all 11 Olist tables, then deliberately scoped analysis down to 3 core operational tables (`customers`, `orders`, `order_items`) based on business requirement mapping.
 
 ### 2. `staging` (Transformation Layer)
