@@ -5,7 +5,7 @@
 ![SQL](https://img.shields.io/badge/SQL-Advanced%20Analytics-green?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Domain](https://img.shields.io/badge/Domain-E--Commerce%20%26%20CLV-purple?style=for-the-badge)
 
-An end-to-end **Extract, Load, Transform (ELT)** pipeline and analytics engineering project built in PostgreSQL on Brazilian e-commerce data from Olist (~100k orders) to measure customer retention, financial value, and revenue per acquired customer over time.
+An end-to-end **Extract, Load, Transform (ELT)** pipeline and analytics engineering project built in PostgreSQL on Brazilian e-commerce data from Olist (~100k orders) to measure customer retention, financial value, and revenue per acquired cohort over time.
 
 It demonstrates a layered data warehouse design, a custom 4-pillar data profiling audit, virtual staging views, entity resolution, and dimensional modeling to produce **Monthly Customer Cohort Retention Grids**, **Cumulative Revenue-Based CLV (Customer Lifetime Value) and ARPU Models**.
 
