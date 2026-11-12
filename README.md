@@ -39,9 +39,25 @@ It demonstrates a layered data warehouse design, a custom 4-pillar data profilin
 
 ## Key Findings
 
-- **Repeat purchasing is extremely low.** For cohorts of meaningful size (300+ customers), retention stays under 1% at every observed offset (month). Month-1 retention ranges from about 0.2% to 0.7%.
-- **Almost all value comes from the first order.** First-month ARPU is roughly R$ 150–182 (BRL; Brazilian Real) per customer (price + freight) across cohorts from Jan 2017 onward. For the oldest cohorts, repeat purchases add only about 2–4% to cumulative CLV (e.g., Jan 2017: 181.92 → 186.58 after 19 months).
-- **Growth is acquisition-driven.** Cohort size rose from 754 (Jan 2017) to 7,217 (Nov 2017, the largest cohort) with no meaningful change in retention. Business impact depends on acquisition volume and first-order value rather than loyalty.
+### 1. Severe Marketplace "One-and-Done" Churn Dynamics:
+- The Metric: Across all cohorts, customer retention collapses from 100% at M_0 down to between 0.2% and 0.7% at M_1, remaining flat near zero through M_12.
+- Business Takeaway: Olist operates strictly as a transactional e-commerce marketplace rather than a habituated subscription product. The data proves that organic repeat-purchase behavior is exceptionally weak, highlighting an immediate commercial opportunity for retention, lifecycle marketing, and CRM re-engagement campaigns.
+
+### 2. Front-Loaded Monetization & Instant CLV Plateaus
+- The Metric: Initial acquisition ARPU (M_0) sits robustly between 150 and 183 units (e.g., 181.92 in Jan 2017, 173.17 in Sep 2017), but subsequent monthly ARPU contributions (M_1 through M_n) drop to fractional yields (0.3 to 1.3 units).
+- Business Takeaway: Because repeat transactions are sparse, Customer Lifetime Value (CLV) flattens almost entirely after month_0. Acquisition cost efficiency (CAC) must be heavily calibrated against this flat long-term yield curve.
+
+### 3. Growth is acquisition-driven
+- The Metric: Cohort size rose from 754 (Jan 2017) to 7,217 (Nov 2017, the largest cohort) with no meaningful change in retention.
+- Business Takeaway: Business impact depends on acquisition volume and first-order value rather than loyalty.
+
+---
+
+- **Layered ELT architecture:** Designed a 3-tier warehouse (`raw` → `staging` → `analytics`) that separates immutable raw ingestion from transformation logic and analytical reporting.
+- **Custom data profiling audit:** Built a 4-pillar framework (Volume/Grain, Quality Dimensions, Entity Resolution, Temporal Sequence) to detect nulls, whitespace, referential breaks, and date violations.
+- **Dynamic staging views:** Performed type casting, regex-based string sanitization, and quality filtering (e.g., removing canceled/unavailable orders) on read, with zero storage duplication.
+- **Entity resolution:** Resolved the split between the transactional key (`customer_id`) and the persistent human entity (`customer_unique_id`), preventing falsely near-zero retention.
+- **Cohort & monetization modeling:** Used window functions and relative month-index math to compute retention grids (M₀ to Mₙ) and cumulative ARPU curves.
 
 ---
 
