@@ -1,33 +1,33 @@
 -- ============== PHASE 3: Data Profiling and Quality Assurance Audit ==========--
--- PREP FOR STAGING --
 
--- Focus henceforth on Core Tables for business objective: raw.customers, raw.orders, raw.order_items, raw.orders.
+-- Focus henceforth on Core Tables for business objective: raw.customers, raw.orders, raw.order_items
 /* Core attributes:
-Cohort Retention: ("Unique Active Customers in Period" N) / "Total Customers in Initial Cohort (Period 0)" X 100
-1. Unique Customer ID
-2. Acquisition timestamp / date
-3. Transaction/Activity/Order timestamp
+A. Cohort Retention: ("Unique Active Customers in Period N") / "Total Customers in Initial Cohort (Period 0)" X 100
+	1. Unique Customer ID
+	2. Acquisition timestamp / date
+	3. Transaction/Activity/Order timestamp
 
-ARPU: ("Total Revenue Generated in Period " TR ) / ("Total Active Users in Period " TAU)
-1. Unique Customer ID
-2. Transaction/ACtivity/Order timestamp
-3. Order sale/revenue
+B. Cumulative CLV [Revenue-based] (cohort c, month n) = (Total revenue of cohort c from month 0 through month n) / (Initial size of cohort c)
+		-- The classical formula (AOV × Purchase Frequency × Customer Lifespan) is a forward-looking estimate and is not what this model computes.
+	1. Unique customer id
+	2. transaction/order/activity unique id
+	3. transaction date
+	4. order revenue
 
-Gross Revenue-Based CLV : {Average Order Value (AOV)} X {Purchase Frequency Rate} X {Customer Lifespan}
-1. Unique customer id
-2. transaction/order/activity unique id
-3. transaction date
-4. order revenue
+C. ARPU: ARPU (cohort c, month n) = (Revenue of cohort c in month n) / (Initial size of cohort c)
+	1. Unique Customer ID
+	2. Transaction/ACtivity/Order timestamp
+	3. Order sale/revenue
 
-Overall Attributes needed:
+Necessary attributes and source:
 -- Unique Customer ID = customer_id FROM raw.customers
 -- Customer Acquisition Date = order_purchase_timestamp FROM raw.orders
 -- Unique Order Transaction ID = order_id FROM raw.orders
 -- Transaction Date = order_purchase_timestamp FROM raw.orders
 -- Order Revenue = (price + freight_value) FROM order_items
 
-Tables involved:
-customers, orders, order_items
+Necessary tables:
+raw.customers, raw.orders, raw.order_items
 */
 
 -- 3.1 PILLAR 1: Structure & Volume Profiling (Shape Audit):
@@ -173,6 +173,3 @@ PHASE 3 SUMMARY:
 	4. ENTITY RESOLUTION SHOWCASE:
 	Mapped out customer purchase frequencies via customer_unique_id
 */
-
-
--- NEXT: STAGE 4 (PRODUCTION STAGING LAYER)
