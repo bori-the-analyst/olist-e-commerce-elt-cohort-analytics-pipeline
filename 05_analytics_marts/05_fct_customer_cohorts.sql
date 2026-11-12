@@ -1,31 +1,18 @@
--- STAGE 5: ANALYTICS MART LAYER
+/* STAGE 5: ANALYTICS MART LAYER (base for Stage-6 Model Analysis)
+This layer creates base for 'Stage 6' model analytics {Monthly Cohort Retention Grid (M_0, M_1, ..., M_n), and the Cumulative CLV & ARPU Model}
+	'fct_customer_cohorts' table would serve as dimensional foundation (the "Grain") to bridge cleaned staging layer transactional data into human-centric cohort timelines (cohort_month and month_index).
+ */
 
-/* 
-This is where  business logic, metric calculations, and portfolio deliverables come to life. We will build this in two structured milestones:The Monthly Cohort Retention Grid ($M_0, M_1, \dots, M_n$)The Cumulative ARPU & CLV Model
-
-OBJECTIVE REMINDER:
-5.1. Cohort retention rate = 
-count customer_unique_Id OF cohort IN timeframe N / count cusotmer_unique_id IN initial cohort timeframe 0; * 100
-cohort creation based ON 1st ORDER timeframe.
-
-5.2. ARPU:
-sum(total_order_value) IN timeframe / count(UNIQUE customers_id) IN timeframe
-
-5.3. CLV=
-AVG(TOTAL_ORDER_VALUE) * (PFR) * Avg customer lifespan x gross margin
-*/
-
--- 6.1.1 Customer Cohort Model Table
+-- 5.1 Customer Cohort Model Table
 	-- TO calculate cohort retention, we have to know for each customer, what their acquisiton month is.
 	-- The business uses transactional customer_id values while tracking unique humans via customer_unique_id
 	-- As such, Cohorts will be created on basis of month (timestamp) of very 1st purchased order. 
-	-- Analytical Cohort TAble Attributes deliverables:
-		-- customer_unique_id, cohort_month, order_id, purchase_timestamp, order_month, total_order_value, month_index
+	-- Cohort TAble Attributes deliverables:		-- customer_unique_id, cohort_month, order_id, purchase_timestamp, order_month, total_order_value, month_index
 
--- 5.1.1.1. Create Analytics Schema (Bridging stg_customers, stg_order_items, stg_orders)
+-- 5.2 Create Analytics Schema (Bridging stg_customers, stg_order_items, stg_orders)
 CREATE SCHEMA IF NOT EXISTS analytics;
 
--- 5.1.1.2. Customer Cohort Base Table (Physical Table / Intermediate Mart)
+-- 5.3. Customer Cohort Base Table (Physical Table / Intermediate Mart)
 DROP TABLE IF EXISTS analytics.fct_customer_cohorts;
 
 CREATE TABLE analytics.fct_customer_cohorts AS
@@ -60,11 +47,12 @@ JOIN staging.stg_orders o ON c.customer_id = o.customer_id
 JOIN staging.stg_order_items oi ON o.order_id = oi.order_id;
 
 
--- 5.1.1.3 Quick view of created analytical cohort table 
+
+-- 5.4 Quick view of created analytical cohort table 
 SELECT * FROM analytics.fct_customer_cohorts fcc LIMIT 10;
 
--- 5.1.1.4 Check for customer count per acqusition & subsequent active months
-SELECT month_index, count(customer_unique_id) UNIQUE_customers
+-- 5.5 Quick check for customer count per acqusition & subsequent active months
+SELECT month_index, count(DISTINCT customer_unique_id) UNIQUE_customers
 FROM analytics.fct_customer_cohorts fcc
 GROUP BY month_index
 ORDER BY month_index ASC;
