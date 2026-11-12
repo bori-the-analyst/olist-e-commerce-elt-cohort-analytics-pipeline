@@ -1,30 +1,31 @@
 -- PHASE 2: REQUIREMENTS SCOPING AND MINIMUM VIABLE ATTRIBUTES --
--- Focus henceforth on Core Tables for business objective: 
+-- Focus henceforth on Core Tables for business objective (towards eliminating score creep): 
 
 /* Project Deliverables and required attributes:
-Cohort Retention: ("Unique Active Customers in Period" N) / "Total Customers in Initial Cohort (Period 0)" X 100
-1. Unique Customer ID
-2. Acquisition timestamp / date
-3. Transaction/Activity/Order timestamp
+A. Cohort Retention: ("Unique Active Customers in Period N") / "Total Customers in Initial Cohort (Period 0)" X 100
+	1. Unique Customer ID
+	2. Acquisition timestamp / date
+	3. Transaction/Activity/Order timestamp
 
-ARPU: ("Total Revenue Generated in Period " TR ) / ("Total Active Users in Period " TAU)
-1. Unique Customer ID
-2. Transaction/ACtivity/Order timestamp
-3. Order sale/revenue
+B. Cumulative CLV [Revenue-based] (cohort c, month n) = (Total revenue of cohort c from month 0 through month n) / (Initial size of cohort c)
+		-- The classical formula (AOV × Purchase Frequency × Customer Lifespan) is a forward-looking estimate and is not what this model computes.
+	1. Unique customer id
+	2. transaction/order/activity unique id
+	3. transaction date
+	4. order revenue
 
-Gross Revenue-Based CLV : {Average Order Value (AOV)} X {Purchase Frequency Rate} X {Customer Lifespan}
-1. Unique customer id
-2. transaction/order/activity unique id
-3. transaction date
-4. order revenue
+C. ARPU: ARPU (cohort c, month n) = (Revenue of cohort c in month n) / (Initial size of cohort c)
+	1. Unique Customer ID
+	2. Transaction/ACtivity/Order timestamp
+	3. Order sale/revenue
 
 Overall Attributes needed:
-Unique Customer ID,
-First Purchase / Acquisition Date / Signup Date
-Order Transaction ID
-Transaction Date / Timestamp
-Order Revenue / Sales
-*/
+1. Unique Customer ID,
+2. First Purchase / Acquisition Date / Signup Date
+3. Order Transaction ID
+4. Transaction Date / Timestamp
+5. Order Revenue / Sales						*/
+
 
 -- STEP 1: Identifying attributes required for business objective.
 -- 1.1 Unique Customer ID
@@ -66,10 +67,11 @@ SELECT
 FROM order_items oi 
 GROUP BY ORDER_id;
 
+
 /* STEP 2: 
- * Distinguishing between required tables and peripheral (surplus to requirements) tables relative to business objective (CLV, ARPU & Cohort Analysis).
- * Eliminating scope creep
-*/
+Distinguishing between required tables and peripheral (surplus to requirements) tables relative to business objective (CLV, ARPU & Cohort Analysis).
+Eliminating scope creep		*/
+
 SELECT * FROM raw.customers; -- required
 SELECT * FROM raw.orders; -- required
 SELECT * FROM raw.order_items; -- required
