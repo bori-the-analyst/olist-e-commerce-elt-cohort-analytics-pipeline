@@ -1,10 +1,8 @@
 -- STAGE 4: PRODUCTION "STAGING" LAYER
-/* 
-Based on the exact anomalies, whitespace issues, and date structures uncovered during data profiling audit.
-I will build three clean Staging Views in my staging schema.
-	* Here, Views are adopted over Physical Tables, for real-time, virtual, and efficient staging. Further reducing and optimizing resource allocation on disk/cloud. 
-These views act as the automated transformation engine—cleaning the data on the fly while keeping the raw original tables pristine and immutable.
-*/
+/* 	Based on the exact anomalies, whitespace issues, and date structures uncovered during data profiling audit.
+	Three clean Staging Views will be built Staging schema.
+		* Here, Views are adopted over Physical Tables, for real-time, virtual, and efficient staging. Further reducing and optimizing resource allocation on disk/cloud. 
+		These views act as the automated transformation engine—cleaning the data on the fly while keeping the raw original tables pristine and immutable.		*/
 
 -- 4.1 Schema creation
 CREATE SCHEMA IF NOT EXISTS staging;
@@ -66,7 +64,6 @@ GROUP BY order_status;
 
 -- Test Order Items Staging
 SELECT * FROM staging.stg_order_items LIMIT 5;
-
 
 
 -- NEXT: STAGE 5: ANALYTICS MART LAYER
