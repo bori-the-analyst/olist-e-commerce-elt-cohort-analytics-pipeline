@@ -1,13 +1,13 @@
-/*
- * Project Title: E-Commerce Customer Retention & Cohort Analytics Engine
+/* Project Title: E-Commerce Customer Retention & Cohort Analytics Engine
  * Dataset: Olist Brazilian E-Commerce Public Dataset
  * Primary Deliverables:
  * 	1. Staging & Analytics DDL Scripts: Reproducible, version-controlled table structures.
  * 	2. SQL Analytics Mart: Modular SQL views/models (01_staging, 02_intermediate, 03_marts).
- * 	3. Monthly Cohort Retention Grid: Distinct customer count and retention % matrix calculated purely in SQL ($M_0, M_1, \dots, M_n$).
- * 	4. Cohort Cumulative ARPU & CLV Model: Financial yield per acquisition vintage over time.
- * 	5. GitHub Production Repository: Structured with clean documentation, data contract, DDL, and executive business summary
- */
+ * 	3. Monthly Cohort Retention Grid: Distinct customer count and retention % matrix calculated purely in SQL (M_0, M_1, ..., M_n).
+ * 	4. Cohort Cumulative CLV & ARPU Model: Financial yield per acquisition vintage over time.
+ * 	5. GitHub Production Repository: Structured with clean documentation, data contract, DDL, and executive business summary              */
+
+
 
 /* PHASE 1 - Database, Raw Schema & Tables Initialization and Ingestion*/
 
@@ -139,13 +139,11 @@ WHERE table_schema = 'raw'
 
 
 
--- RAW TABLE DATA INGESTION
--- Complete Raw Table Ingestion performed using Powershell.
-	/* i.e. 
-	 * 		\copy raw.raw_customers 
-			FROM 'folder_path/olist_customers_dataset.csv' 
-			WITH (FORMAT csv, HEADER true, DELIMITER ',', ENCODING 'UTF8');
-	*/
+/* RAW TABLE DATA INGESTION (using PowerShell)
+	i.e. 
+		\copy raw.raw_customers 
+		FROM 'folder_path/olist_customers_dataset.csv' 
+		WITH (FORMAT csv, HEADER true, DELIMITER ',', ENCODING 'UTF8');        	*/
 
 -- Check for 100% data ingestion by PowerShell
 SELECT * FROM raw.closed_deals;
